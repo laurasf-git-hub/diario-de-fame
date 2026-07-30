@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="gl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Diario de Fame</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FBF6EC;
+    --paper:#FFFDF8;
+    --ink:#26312C;
+    --ink-soft:#5B6660;
+    --teal:#146B64;
+    --teal-deep:#0E4C47;
+    --teal-mist:#DCEEEC;
+    --mustard:#F2B705;
+    --mustard-soft:#FBE79A;
+    --berry:#A3395B;
+    --berry-soft:#F3DCE3;
+    --line:#E3DCC9;
+    --radius:16px;
+    --shadow:0 2px 10px rgba(38,49,44,0.06);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Work Sans', system-ui, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:84px;
+    min-height:100vh;
+  }
+  header.top{
+    padding:22px 20px 14px;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+    position:sticky; top:0; z-index:20;
+  }
+  header.top .eyebrow{
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--teal); font-weight:600;
+  }
+  header.top h1{
+    font-family:'Fraunces', serif; font-weight:700; font-size:26px;
+    margin:2px 0 2px; color:var(--teal-deep);
+  }
+  header.top .sub{ font-size:12.5px; color:var(--ink-soft); }
+
+  main{ padding:18px 16px 10px; max-width:520px; margin:0 auto; }
+  .view{ display:none; }
+  .view.active{ display:block; animation:fade .25s ease; }
+  @keyframes fade{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
+
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px;
+    margin-bottom:14px;
+    box-shadow:var(--shadow);
+  }
+  .card h2{
+    font-family:'Fraunces', serif; font-size:17px; margin:0 0 3px; color:var(--teal-deep);
+  }
+  .card .hint{ font-size:12px; color:var(--ink-soft); margin:0 0 12px; line-height:1.4; }
+
+  label.field-label{
+    display:block; font-size:12.5px; font-weight:600; color:var(--ink);
+    margin:14px 0 6px;
+  }
+  label.field-label:first-of-type{ margin-top:0; }
+
+  input[type="date"], input[type="text"], textarea{
+    width:100%; border:1px solid var(--line); border-radius:10px;
+    padding:10px 12px; font-family:inherit; font-size:14.5px; color:var(--ink);
+    background:#fff;
+  }
+  textarea{ resize:vertical; min-height:56px; }
+  input:focus, textarea:focus{ outline:2px solid var(--teal); outline-offset:1px; }
+
+  .chip-row{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{
+    border:1px solid var(--line); background:#fff; color:var(--ink);
+    border-radius:999px; padding:8px 14px; font-size:13.5px; font-weight:500;
+    cursor:pointer; transition:.15s;
+  }
+  .chip.selected{ background:var(--teal); color:#fff; border-color:var(--teal); }
+  .chip:focus-visible{ outline:2px solid var(--teal-deep); outline-offset:2px; }
+
+  .toggle2{ display:flex; gap:8px; }
+  .toggle2 .chip{ flex:1; text-align:center; }
+  .toggle2 .chip.selected.fisio{ background:var(--teal); border-color:var(--teal); }
+  .toggle2 .chip.selected.nofisio{ background:var(--berry); border-color:var(--berry); }
+
+  .type-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:4px; }
+  .type-chip{
+    border:1px solid var(--line); background:#fff; border-radius:12px;
+    padding:10px 4px; text-align:center; cursor:pointer; font-size:11.5px; font-weight:600; color:var(--ink);
+    line-height:1.25;
+  }
+  .type-chip .emoji{ display:block; font-size:20px; margin-bottom:2px; }
+  .type-chip.selected{ background:var(--mustard-soft); border-color:var(--mustard); }
+
+  .scale-row{ display:flex; gap:6px; }
+  .scale-btn{
+    flex:1; border:1px solid var(--line); background:#fff; border-radius:10px;
+    padding:9px 0; text-align:center; font-weight:600; font-size:14px; cursor:pointer; color:var(--ink-soft);
+  }
+  .scale-btn.selected{ background:var(--teal); color:#fff; border-color:var(--teal); }
+  .scale-caption{ display:flex; justify-content:space-between; font-size:10.5px; color:var(--ink-soft); margin-top:4px; }
+
+  .pair{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .pair .field-label{ margin-top:0; }
+  .pair-block + .pair-block{ margin-top:16px; }
+
+  .yn-row{ display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--line); }
+  .yn-row:last-child{ border-bottom:none; }
+  .yn-row p{ margin:0; font-size:13.5px; padding-right:10px; }
+  .yn-toggle{ display:flex; gap:6px; flex-shrink:0; }
+  .yn-toggle .chip{ padding:6px 12px; font-size:12.5px; }
+  .yn-toggle .chip.selected{ background:var(--berry); border-color:var(--berry); }
+
+  .save-btn{
+    width:100%; background:var(--teal); color:#fff; border:none; border-radius:12px;
+    padding:14px; font-size:15px; font-weight:600; font-family:inherit; cursor:pointer;
+    margin-top:6px; box-shadow:0 3px 0 var(--teal-deep);
+  }
+  .save-btn:active{ transform:translateY(2px); box-shadow:0 1px 0 var(--teal-deep); }
+  .save-msg{
+    text-align:center; font-size:13px; color:var(--teal-deep); font-weight:600;
+    margin-top:10px; opacity:0; transition:opacity .3s;
+  }
+  .save-msg.show{ opacity:1; }
+
+  /* history */
+  .day-group{ margin-bottom:16px; }
+  .day-group h3{
+    font-family:'Fraunces', serif; font-size:14.5px; color:var(--teal-deep);
+    margin:0 0 8px; padding-bottom:6px; border-bottom:2px solid var(--mustard-soft);
+  }
+  .entry{
+    background:var(--paper); border:1px solid var(--line); border-radius:12px;
+    padding:12px 14px; margin-bottom:8px; position:relative;
+  }
+  .entry .row1{ display:flex; justify-content:space-between; align-items:center; }
+  .entry .meal{ font-weight:700; font-size:13.5px; }
+  .entry .food{ font-size:12.5px; color:var(--ink-soft); margin-top:1px; }
+  .entry .del{ background:none; border:none; color:var(--berry); font-size:12px; cursor:pointer; padding:4px 6px; }
+  .entry .tags{ display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
+  .tag{ font-size:11px; background:var(--teal-mist); color:var(--teal-deep); padding:3px 8px; border-radius:999px; }
+  .tag.berry{ background:var(--berry-soft); color:var(--berry); }
+  .entry .note{ font-size:12px; color:var(--ink-soft); margin-top:6px; }
+  .empty-state{ text-align:center; padding:40px 20px; color:var(--ink-soft); font-size:13.5px; }
+  .empty-state .emoji{ font-size:32px; display:block; margin-bottom:8px; }
+
+  /* bottom nav */
+  nav.bottom{
+    position:fixed; bottom:0; left:0; right:0; background:var(--paper);
+    border-top:1px solid var(--line); display:flex; z-index:30;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  nav.bottom button{
+    flex:1; border:none; background:none; padding:10px 4px 8px; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    color:var(--ink-soft); font-family:inherit; font-size:11px; font-weight:600;
+  }
+  nav.bottom button .ic{ font-size:19px; }
+  nav.bottom button.active{ color:var(--teal-deep); }
+
+  .loading{ text-align:center; padding:30px; color:var(--ink-soft); font-size:13px; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="eyebrow">Baseado nas fichas de Lucía Terzi · Nutricionista</div>
+  <h1>Diario de Fame</h1>
+  <div class="sub">Rexistra cada comida en segundos</div>
+</header>
+
+<main>
+
+  <!-- VIEW: NOVA ENTRADA -->
+  <section class="view active" id="view-nova">
+
+    <div class="card">
+      <h2>Cando e que comida</h2>
+      <label class="field-label">Data</label>
+      <input type="date" id="f-data">
+      <label class="field-label">Comida</label>
+      <div class="chip-row" id="f-comida">
+        <button class="chip" data-val="Almorzo">Almorzo</button>
+        <button class="chip" data-val="Media mañá">Media mañá</button>
+        <button class="chip" data-val="Xantar">Xantar</button>
+        <button class="chip" data-val="Merenda">Merenda</button>
+        <button class="chip" data-val="Cea">Cea</button>
+      </div>
+      <label class="field-label">Que comín</label>
+      <input type="text" id="f-quecomeu" placeholder="Ex: torrada con aguacate e ovo">
+    </div>
+
+    <div class="card">
+      <h2>De onde vén a miña fame?</h2>
+      <p class="hint">Clasifícaa primeiro e logo escolle o tipo concreto (segundo Jan Chozen).</p>
+      <div class="toggle2" id="f-origen">
+        <button class="chip fisio" data-val="Fisiológica">Fisiolóxica</button>
+        <button class="chip nofisio" data-val="No fisiológica">Non fisiolóxica</button>
+      </div>
+      <div class="type-grid" id="f-tipo">
+        <button class="type-chip" data-val="Visual"><span class="emoji">👁️</span>Visual</button>
+        <button class="type-chip" data-val="Olfativa"><span class="emoji">👃</span>Olfactiva</button>
+        <button class="type-chip" data-val="De sabor"><span class="emoji">👅</span>De sabor</button>
+        <button class="type-chip" data-val="De oído"><span class="emoji">👂</span>De oído</button>
+        <button class="type-chip" data-val="De tacto"><span class="emoji">✋</span>De tacto</button>
+        <button class="type-chip" data-val="De estómago"><span class="emoji">🫄</span>De estómago</button>
+        <button class="type-chip" data-val="Mental"><span class="emoji">🧠</span>Mental</button>
+        <button class="type-chip" data-val="Celular"><span class="emoji">🔬</span>Celular</button>
+        <button class="type-chip" data-val="De corazón"><span class="emoji">❤️</span>De corazón</button>
+      </div>
+      <label class="field-label">Como a identifiquei</label>
+      <textarea id="f-como" placeholder="Ex: cheirei o pan recén feito e quixen comelo sen ter fame real..."></textarea>
+      <label class="field-label">Como me sinto despois de comer (1-5)</label>
+      <div class="scale-row" id="f-sensacion">
+        <button class="scale-btn" data-val="1">1</button>
+        <button class="scale-btn" data-val="2">2</button>
+        <button class="scale-btn" data-val="3">3</button>
+        <button class="scale-btn" data-val="4">4</button>
+        <button class="scale-btn" data-val="5">5</button>
+      </div>
+      <div class="scale-caption"><span>1 mal / culpa</span><span>5 moi ben / en paz</span></div>
+    </div>
+
+    <div class="card">
+      <h2>Estómago</h2>
+      <p class="hint">Segundo o debuxo da ficha: 1 baleiro, 5 vou estalar.</p>
+      <div class="pair">
+        <div>
+          <label class="field-label">Antes (1-5)</label>
+          <div class="scale-row" id="f-estomago-antes">
+            <button class="scale-btn" data-val="1">1</button>
+            <button class="scale-btn" data-val="2">2</button>
+            <button class="scale-btn" data-val="3">3</button>
+            <button class="scale-btn" data-val="4">4</button>
+            <button class="scale-btn" data-val="5">5</button>
+          </div>
+        </div>
+        <div>
+          <label class="field-label">Despois (1-5)</label>
+          <div class="scale-row" id="f-estomago-despois">
+            <button class="scale-btn" data-val="1">1</button>
+            <button class="scale-btn" data-val="2">2</button>
+            <button class="scale-btn" data-val="3">3</button>
+            <button class="scale-btn" data-val="4">4</button>
+            <button class="scale-btn" data-val="5">5</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Fame e saciedade (1-10)</h2>
+      <p class="hint">Marca os dous, antes e despois de comer.</p>
+      <div class="pair-block">
+        <label class="field-label">Fame antes</label>
+        <div class="scale-row" id="f-fame-antes" style="flex-wrap:wrap;">
+          <button class="scale-btn" data-val="1">1</button><button class="scale-btn" data-val="2">2</button>
+          <button class="scale-btn" data-val="3">3</button><button class="scale-btn" data-val="4">4</button>
+          <button class="scale-btn" data-val="5">5</button><button class="scale-btn" data-val="6">6</button>
+          <button class="scale-btn" data-val="7">7</button><button class="scale-btn" data-val="8">8</button>
+          <button class="scale-btn" data-val="9">9</button><button class="scale-btn" data-val="10">10</button>
+        </div>
+      </div>
+      <div class="pair-block">
+        <label class="field-label">Fame despois</label>
+        <div class="scale-row" id="f-fame-despois" style="flex-wrap:wrap;">
+          <button class="scale-btn" data-val="1">1</button><button class="scale-btn" data-val="2">2</button>
+          <button class="scale-btn" data-val="3">3</button><button class="scale-btn" data-val="4">4</button>
+          <button class="scale-btn" data-val="5">5</button><button class="scale-btn" data-val="6">6</button>
+          <button class="scale-btn" data-val="7">7</button><button class="scale-btn" data-val="8">8</button>
+          <button class="scale-btn" data-val="9">9</button><button class="scale-btn" data-val="10">10</button>
+        </div>
+      </div>
+      <div class="pair-block">
+        <label class="field-label">Saciedade antes</label>
+        <div class="scale-row" id="f-saciedade-antes" style="flex-wrap:wrap;">
+          <button class="scale-btn" data-val="1">1</button><button class="scale-btn" data-val="2">2</button>
+          <button class="scale-btn" data-val="3">3</button><button class="scale-btn" data-val="4">4</button>
+          <button class="scale-btn" data-val="5">5</button><button class="scale-btn" data-val="6">6</button>
+          <button class="scale-btn" data-val="7">7</button><button class="scale-btn" data-val="8">8</button>
+          <button class="scale-btn" data-val="9">9</button><button class="scale-btn" data-val="10">10</button>
+        </div>
+      </div>
+      <div class="pair-block">
+        <label class="field-label">Saciedade despois</label>
+        <div class="scale-row" id="f-saciedade-despois" style="flex-wrap:wrap;">
+          <button class="scale-btn" data-val="1">1</button><button class="scale-btn" data-val="2">2</button>
+          <button class="scale-btn" data-val="3">3</button><button class="scale-btn" data-val="4">4</button>
+          <button class="scale-btn" data-val="5">5</button><button class="scale-btn" data-val="6">6</button>
+          <button class="scale-btn" data-val="7">7</button><button class="scale-btn" data-val="8">8</button>
+          <button class="scale-btn" data-val="9">9</button><button class="scale-btn" data-val="10">10</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Antes de rematar</h2>
+      <div class="yn-row">
+        <p>¿Comín sen fame?</p>
+        <div class="yn-toggle" id="f-sinfame"><button class="chip" data-val="Si">Si</button><button class="chip" data-val="Non">Non</button></div>
+      </div>
+      <div class="yn-row">
+        <p>¿Quedei moi cheo/a ao rematar?</p>
+        <div class="yn-toggle" id="f-cheo"><button class="chip" data-val="Si">Si</button><button class="chip" data-val="Non">Non</button></div>
+      </div>
+      <div class="yn-row">
+        <p>¿A cantidade adaptouse á miña fame/saciedade?</p>
+        <div class="yn-toggle" id="f-adaptada"><button class="chip" data-val="Si">Si</button><button class="chip" data-val="Non">Non</button></div>
+      </div>
+    </div>
+
+    <button class="save-btn" id="btn-save">Gardar rexistro</button>
+    <div class="save-msg" id="save-msg">✓ Rexistro gardado</div>
+  </section>
+
+  <!-- VIEW: HISTORIAL -->
+  <section class="view" id="view-historial">
+    <div id="historial-content" class="loading">Cargando historial…</div>
+  </section>
+
+  <!-- VIEW: REFLEXION -->
+  <section class="view" id="view-reflexion">
+    <div class="card">
+      <h2>Fisiolóxica vs. non fisiolóxica</h2>
+      <p class="hint">Anota exemplos propios de cada unha (exercicio inicial da ficha).</p>
+      <label class="field-label">Como recoñezo a fame fisiolóxica</label>
+      <textarea id="r-fisio" rows="3"></textarea>
+      <label class="field-label">Como recoñezo a fame non fisiolóxica</label>
+      <textarea id="r-nofisio" rows="3"></textarea>
+    </div>
+    <div class="card">
+      <h2>Reflexión da semana</h2>
+      <label class="field-label">¿Que credes que podo modificar?</label>
+      <textarea id="r-modificar" rows="3"></textarea>
+      <label class="field-label">¿Que conclusión obteño?</label>
+      <textarea id="r-conclusion" rows="4"></textarea>
+    </div>
+    <button class="save-btn" id="btn-save-reflexion">Gardar reflexión</button>
+    <div class="save-msg" id="save-msg-reflexion">✓ Reflexión gardada</div>
+  </section>
+
+</main>
+
+<nav class="bottom">
+  <button class="active" data-view="nova"><span class="ic">📝</span>Rexistrar</button>
+  <button data-view="historial"><span class="ic">📖</span>Historial</button>
+  <button data-view="reflexion"><span class="ic">💭</span>Reflexión</button>
+</nav>
+
+<script>
+(function(){
+  const MEAL_ORDER = ["Almorzo","Media mañá","Xantar","Merenda","Cea"];
+  let form = {};
+
+  function todayStr(){
+    const d = new Date();
+    return d.toISOString().slice(0,10);
+  }
+  document.getElementById('f-data').value = todayStr();
+
+  function bindGroup(containerId, key){
+    const el = document.getElementById(containerId);
+    el.querySelectorAll('button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const isSame = form[key] === btn.dataset.val;
+        el.querySelectorAll('button').forEach(b=>b.classList.remove('selected'));
+        if(!isSame){
+          btn.classList.add('selected');
+          form[key] = btn.dataset.val;
+        } else {
+          delete form[key];
+        }
+      });
+    });
+  }
+
+  bindGroup('f-comida','comida');
+  bindGroup('f-origen','origen');
+  bindGroup('f-tipo','tipo');
+  bindGroup('f-sensacion','sensacion');
+  bindGroup('f-estomago-antes','estomagoAntes');
+  bindGroup('f-estomago-despois','estomagoDespois');
+  bindGroup('f-fame-antes','fameAntes');
+  bindGroup('f-fame-despois','fameDespois');
+  bindGroup('f-saciedade-antes','saciedadeAntes');
+  bindGroup('f-saciedade-despois','saciedadeDespois');
+  bindGroup('f-sinfame','sinFame');
+  bindGroup('f-cheo','cheo');
+  bindGroup('f-adaptada','adaptada');
+
+  document.getElementById('f-origen').querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.getElementById('f-origen').querySelectorAll('button').forEach(b=>b.classList.remove('fisio','nofisio'));
+    });
+  });
+
+  function resetForm(){
+    form = {};
+    document.querySelectorAll('.chip.selected, .type-chip.selected, .scale-btn.selected').forEach(b=>b.classList.remove('selected'));
+    document.getElementById('f-como').value = '';
+    document.getElementById('f-quecomeu').value = '';
+    document.getElementById('f-data').value = todayStr();
+  }
+
+  async function saveEntry(){
+    if(!form.comida){ alert('Escolle a comida, por favor.'); return; }
+    const entry = {
+      id: 'e' + Date.now() + Math.random().toString(36).slice(2,7),
+      data: document.getElementById('f-data').value || todayStr(),
+      comida: form.comida || '',
+      quecomeu: document.getElementById('f-quecomeu').value || '',
+      origen: form.origen || '',
+      tipo: form.tipo || '',
+      como: document.getElementById('f-como').value || '',
+      sensacion: form.sensacion || '',
+      estomagoAntes: form.estomagoAntes || '',
+      estomagoDespois: form.estomagoDespois || '',
+      fameAntes: form.fameAntes || '',
+      fameDespois: form.fameDespois || '',
+      saciedadeAntes: form.saciedadeAntes || '',
+      saciedadeDespois: form.saciedadeDespois || '',
+      sinFame: form.sinFame || '',
+      cheo: form.cheo || '',
+      adaptada: form.adaptada || ''
+    };
+    try{
+
+  const resposta = await fetch(
+    "https://script.google.com/macros/s/AKfycbzg-K1qBVGMnJnNlUhxSpp8X5SzRu_K-WGU-7nHbixP1FLkXGKpAOGPK9XNiQv5L1YLaw/exec",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        data: entry.data,
+        comida: entry.comida,
+        quecomeu: entry.quecomeu,
+        orixe: entry.origen,
+        tipo: entry.tipo,
+        como: entry.como,
+        sensacion: entry.sensacion,
+        estomagoAntes: entry.estomagoAntes,
+        estomagoDespois: entry.estomagoDespois,
+        fameAntes: entry.fameAntes,
+        fameDespois: entry.fameDespois,
+        saciedadeAntes: entry.saciedadeAntes,
+        saciedadeDespois: entry.saciedadeDespois,
+        sinFame: entry.sinFame,
+        cheo: entry.cheo,
+        adaptada: entry.adaptada
+      })
+    }
+  );
+
+  const resultado = await resposta.json();
+
+  if(!resultado.ok){
+    throw new Error(resultado.erro);
+  }
+    }catch(err){
+      console.error(err);
+      alert('Non se puido gardar o rexistro. Téntao de novo.');
+    }
+  }
+  document.getElementById('btn-save').addEventListener('click', saveEntry);
+
+  async function loadHistorial(){
+    const container = document.getElementById('historial-content');
+    container.innerHTML = '<div class="loading">Cargando historial…</div>';
+    try{
+      const resposta = await fetch(
+  "https://script.google.com/macros/s/AKfycbzg-K1qBVGMnJnNlUhxSpp8X5SzRu_K-WGU-7nHbixP1FLkXGKpAOGPK9XNiQv5L1YLaw/exec"
+);
+
+const list = await resposta.json();
+      if(list.length === 0){
+        container.innerHTML = '<div class="empty-state"><span class="emoji">🍽️</span>Aínda non hai rexistros.<br>Engade a túa primeira comida na pestana Rexistrar.</div>';
+        return;
+      }
+      list.sort((a,b)=> (a.data+a.comida).localeCompare(b.data+b.comida));
+      const byDay = {};
+      list.forEach(e=>{ (byDay[e.data] = byDay[e.data] || []).push(e); });
+      const days = Object.keys(byDay).sort().reverse();
+      let html = '';
+      days.forEach(day=>{
+        const entries = byDay[day].slice().sort((a,b)=> MEAL_ORDER.indexOf(a.comida)-MEAL_ORDER.indexOf(b.comida));
+        html += `<div class="day-group"><h3>${formatDate(day)}</h3>`;
+        entries.forEach(e=>{
+          html += `<div class="entry" data-id="${e.id}">
+            <div class="row1">
+              <div>
+                <span class="meal">${escapeHtml(e.comida)}</span>
+                ${e.quecomeu ? `<div class="food">${escapeHtml(e.quecomeu)}</div>` : ''}
+              </div>
+              <button class="del" data-id="${e.id}">Eliminar</button>
+            </div>
+            <div class="tags">
+              ${e.origen ? `<span class="tag ${e.origen==='No fisiológica'?'berry':''}">${escapeHtml(e.origen==='No fisiológica'?'Non fisiolóxica':'Fisiolóxica')}</span>` : ''}
+              ${e.tipo ? `<span class="tag">${escapeHtml(e.tipo)}</span>` : ''}
+              ${e.sensacion ? `<span class="tag">Como me sinto ${e.sensacion}/5</span>` : ''}
+              ${e.estomagoAntes || e.estomagoDespois ? `<span class="tag">Estómago ${e.estomagoAntes||'–'}→${e.estomagoDespois||'–'}</span>` : ''}
+              ${e.fameAntes || e.fameDespois ? `<span class="tag">Fame ${e.fameAntes||'–'}→${e.fameDespois||'–'}</span>` : ''}
+              ${e.saciedadeAntes || e.saciedadeDespois ? `<span class="tag">Saciedade ${e.saciedadeAntes||'–'}→${e.saciedadeDespois||'–'}</span>` : ''}
+              ${e.sinFame==='Si' ? `<span class="tag berry">Comeu sen fame</span>` : ''}
+              ${e.cheo==='Si' ? `<span class="tag berry">Quedou moi cheo/a</span>` : ''}
+              ${e.adaptada==='Non' ? `<span class="tag berry">Cantidade non adaptada</span>` : ''}
+            </div>
+            ${e.como ? `<div class="note">${escapeHtml(e.como)}</div>` : ''}
+          </div>`;
+        });
+        html += '</div>';
+      });
+      container.innerHTML = html;
+      container.querySelectorAll('.del').forEach(btn=>{
+        btn.addEventListener('click', ()=>deleteEntry(btn.dataset.id));
+      });
+    }catch(err){
+      console.error(err);
+      container.innerHTML = '<div class="empty-state">Houbo un problema ao cargar o historial.</div>';
+    }
+  }
+
+  async function deleteEntry(id){
+    try{
+      const existing = await window.storage.get('hunger-entries').catch(()=>null);
+      let list = existing ? JSON.parse(existing.value) : [];
+      list = list.filter(e=>e.id !== id);
+      await window.storage.set('hunger-entries', JSON.stringify(list));
+      loadHistorial();
+    }catch(err){
+      console.error(err);
+      alert('Non se puido eliminar o rexistro.');
+    }
+  }
+
+  function formatDate(iso){
+    const d = new Date(iso + 'T00:00:00');
+    return d.toLocaleDateString('gl-ES', { weekday:'long', day:'numeric', month:'long' });
+  }
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  async function loadReflexion(){
+    try{
+      const existing = await window.storage.get('hunger-reflection').catch(()=>null);
+      if(existing){
+        const r = JSON.parse(existing.value);
+        document.getElementById('r-fisio').value = r.fisio || '';
+        document.getElementById('r-nofisio').value = r.nofisio || '';
+        document.getElementById('r-modificar').value = r.modificar || '';
+        document.getElementById('r-conclusion').value = r.conclusion || '';
+      }
+    }catch(err){ console.error(err); }
+  }
+  async function saveReflexion(){
+    const r = {
+      fisio: document.getElementById('r-fisio').value,
+      nofisio: document.getElementById('r-nofisio').value,
+      modificar: document.getElementById('r-modificar').value,
+      conclusion: document.getElementById('r-conclusion').value
+    };
+    try{
+
+  const resposta = await fetch(
+    "https://script.google.com/macros/s/AKfycbzg-K1qBVGMnJnNlUhxSpp8X5SzRu_K-WGU-7nHbixP1FLkXGKpAOGPK9XNiQv5L1YLaw/exec",
+    {
+      method:"POST",
+      body: JSON.stringify({
+        tipoEnvio:"reflexion",
+        fisio:r.fisio,
+        nofisio:r.nofisio,
+        modificar:r.modificar,
+        conclusion:r.conclusion
+      })
+    }
+  );
+
+  const resultado = await resposta.json();
+
+  if(!resultado.ok){
+    throw new Error(resultado.erro);
+  }
+
+  const msg = document.getElementById('save-msg-reflexion');
+  msg.classList.add('show');
+  setTimeout(()=>msg.classList.remove('show'), 1800);
+  }catch(err){
+      console.error(err);
+      alert('Non se puido gardar a reflexión.');
+    }
+  }
+  document.getElementById('btn-save-reflexion').addEventListener('click', saveReflexion);
+
+  document.querySelectorAll('nav.bottom button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('nav.bottom button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+      const view = document.getElementById('view-' + btn.dataset.view);
+      view.classList.add('active');
+      if(btn.dataset.view === 'historial') loadHistorial();
+      if(btn.dataset.view === 'reflexion') loadReflexion();
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>
