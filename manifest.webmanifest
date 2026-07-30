@@ -1,0 +1,13 @@
+{
+  "name": "Diario de Fame",
+  "short_name": "Diario de Fame",
+  "start_url": "/diario-de-fame/",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "icono-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
