@@ -385,10 +385,33 @@
       });
     });
   }
+  function bindMultiGroup(containerId, key){
+  const el = document.getElementById(containerId);
+
+  el.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+
+      btn.classList.toggle('selected');
+
+      if(!form[key]){
+        form[key] = [];
+      }
+
+      const valor = btn.dataset.val;
+
+      if(form[key].includes(valor)){
+        form[key] = form[key].filter(v => v !== valor);
+      } else {
+        form[key].push(valor);
+      }
+
+    });
+  });
+}
 
   bindGroup('f-comida','comida');
   bindGroup('f-origen','origen');
-  bindGroup('f-tipo','tipo');
+  bindMultiGroup('f-tipo','tipos');
   bindGroup('f-sensacion','sensacion');
   bindGroup('f-estomago-antes','estomagoAntes');
   bindGroup('f-estomago-despois','estomagoDespois');
@@ -422,7 +445,7 @@
       comida: form.comida || '',
       quecomeu: document.getElementById('f-quecomeu').value || '',
       origen: form.origen || '',
-      tipo: form.tipo || '',
+      tipo: form.tipos ? form.tipos.join(', ') : '',
       como: document.getElementById('f-como').value || '',
       sensacion: form.sensacion || '',
       estomagoAntes: form.estomagoAntes || '',
