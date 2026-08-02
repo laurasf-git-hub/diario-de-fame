@@ -246,7 +246,11 @@
 
     <div class="card">
       <h2>Estómago</h2>
-      <p class="hint">1: baleiro, morro coa fame, 2: estómago algo cheo pero teño fame, 3: parece que estou satisfeita,quizá comería algo pero non teño fame, 4: estou bastante saciada, non sento gana de comer máis, 5 vou estalar.</p>
+      <p class="hint">1: baleiro, morro coa fame<br>
+        2: estómago algo cheo pero teño fame<br>
+        3: parece que estou satisfeita,quizá comería algo pero non teño fame<br>
+        4: estou bastante saciada, non sento gana de comer máis<br>
+        5 vou estalar.</p>
       <div class="pair">
         <div>
           <label class="field-label">Antes (1-5)</label>
@@ -300,6 +304,12 @@
           <button class="scale-btn" data-val="9">9</button><button class="scale-btn" data-val="10">10</button>
         </div>
       </div>
+       <p class="hint">Escala da saciedade: 
+         1-2 (Baleiro total): Fame extrema ou dolorosa, con sensación de debilidade
+         3-4 (Insatisfeita): Inda tes ganas de comer; o corpo segue pedindo máis cantidade
+         5-6 (Neutral / Satisfeita): A fame desapareceu, non precisas comer máis, inda que físicamente cabería un pequeno bocado
+         7-8 (Ben saciada): O punto ideal e cómodo; sinteste con enerxía, chea de forma agradable e sen rastro de apetito
+         9-10 (Chea a reventar): Exceso de comida; sintes pesadez, tensión no abdomen ou incomodidade ao moverte</p>
       <div class="pair-block">
         <label class="field-label">Saciedade antes</label>
         <div class="scale-row" id="f-saciedade-antes" style="flex-wrap:wrap;">
@@ -325,15 +335,15 @@
     <div class="card">
       <h2>Antes de rematar</h2>
       <div class="yn-row">
-        <p>¿Comín sen fame?</p>
+        <p>Comín sen fame?</p>
         <div class="yn-toggle" id="f-sinfame"><button class="chip" data-val="Si">Si</button><button class="chip" data-val="Non">Non</button></div>
       </div>
       <div class="yn-row">
-        <p>¿Quedei moi cheo/a ao rematar?</p>
+        <p>Quedei moi chea ao rematar?</p>
         <div class="yn-toggle" id="f-cheo"><button class="chip" data-val="Si">Si</button><button class="chip" data-val="Non">Non</button></div>
       </div>
       <div class="yn-row">
-        <p>¿A cantidade adaptouse á miña fame/saciedade?</p>
+        <p>A cantidade adaptouse á miña fame/saciedade?</p>
         <div class="yn-toggle" id="f-adaptada"><button class="chip" data-val="Si">Si</button><button class="chip" data-val="Non">Non</button></div>
       </div>
     </div>
@@ -359,9 +369,9 @@
     </div>
     <div class="card">
       <h2>Reflexión da semana</h2>
-      <label class="field-label">¿Que credes que podo modificar?</label>
+      <label class="field-label">Que cres que podes modificar?</label>
       <textarea id="r-modificar" rows="3"></textarea>
-      <label class="field-label">¿Que conclusión obteño?</label>
+      <label class="field-label">Que conclusión obtes?</label>
       <textarea id="r-conclusion" rows="4"></textarea>
     </div>
     <button class="save-btn" id="btn-save-reflexion">Gardar reflexión</button>
